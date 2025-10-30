@@ -36,7 +36,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-**Do not share or push this file to GitHub.** Your `.gitignore` already protects it.
+**Do not share or push this file to GitHub.**`.gitignore` already protects it.
 
 ### 5. Run the Script
 
