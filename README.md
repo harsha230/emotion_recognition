@@ -4,7 +4,7 @@
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/<your-username>/emotion_recognition.git
+git clone https://github.com/harsha230/emotion_recognition.git
 cd emotion_recognition
 ```
 
