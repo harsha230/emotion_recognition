@@ -1,4 +1,4 @@
-# 🧠 Emotion Recognition (Image-based)
+# Emotion Recognition (Image-based)
 
 ## Setup Instructions
 
