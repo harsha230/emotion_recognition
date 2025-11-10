@@ -3,10 +3,15 @@ import base64
 import time
 from dotenv import load_dotenv
 from typing import Any
+import subprocess
+import json
 import google.generativeai as genai
 from PIL import Image
 from google.api_core import exceptions as g_exceptions 
 from openai import OpenAI, APIError, RateLimitError, AuthenticationError, PermissionDeniedError, BadRequestError
+import ollama 
+from ollama import ResponseError 
+from requests.exceptions import ConnectionError as RequestsConnectionError
 
 load_dotenv()
 OPENAI_KEY = os.getenv("OPENAI_API_KEY")
@@ -128,13 +133,80 @@ def run_gemini_model(image_path: str, prompt: str) -> dict[str, Any]:
         "remaining_tokens": None,
         "cost_usd": None,
     }
+def run_ollama_model(image_path: str, prompt: str) -> dict[str, Any]:
+    model_name = "qwen3-vl:8b"
+    
+    reasoning = final_answer = ""
+    prompt_tokens = completion_tokens = total_tokens = 0
+    
+    try:
+        ollama.list()
+    except RequestsConnectionError:
+        print("\nOllama Error: Could not connect to Ollama.")
+        print("Please make sure Ollama is running")
+        return {"error": "Ollama server not reachable"}
+    except Exception as e:
+        print(f"\nOllama Error: Unexpected error checking status: {e}")
+        return {"error": "Ollama status check failed"}
+
+    try:
+        with open(image_path, "rb") as f:
+            image_bytes = f.read()
+    except FileNotFoundError:
+        print(f"Error: Image file not found at {image_path}")
+        return {"error": "Image file not found"}
+    except Exception as e:
+        print(f"Error reading image file: {e}")
+        return {"error": f"Error reading image file: {e}"}
+
+    start_time = time.time()
+    try:
+        print(f"\nRunning Ollama model '{model_name}'. This may take a moment...")
+        response = ollama.chat(
+            model=model_name,
+            messages=[
+                {
+                    'role': 'user',
+                    'content': prompt,
+                    'images': [image_bytes]  
+                }
+            ]
+        )
+        content = response['message']['content'].strip()
+        reasoning = extract_section(content, "Reasoning:")
+        final_answer = extract_section(content, "Final Answer:")
+
+    except ResponseError as e:
+        if "model" in str(e) and "not found" in str(e):
+            print(f"\nOllama Error: Model '{model_name}' not found.")
+            print(f"Please run: ollama pull {model_name}")
+        else:
+            print(f"\nOllama API Error: {e}")
+    except RequestsConnectionError:
+        print("\nOllama Error: Connection lost during chat.")
+    except Exception as e:
+        print(f"\nOllama Error: Unexpected error during chat: {e}")
+
+    response_time = round(time.time() - start_time, 2)
+    return {
+        "model_name": model_name,
+        "reasoning": reasoning,
+        "final_answer": final_answer,
+        "response_time": response_time,
+        "prompt_tokens": prompt_tokens,
+        "completion_tokens": completion_tokens,
+        "total_tokens": total_tokens,
+        "remaining_tokens": None,  
+        "cost_usd": 0.0,  
+    }
 
 def recognize_emotion(model_choice: str, image_path: str, prompt: str) -> dict[str, Any] | None:
     if model_choice == "openai":
         return run_openai_model(image_path, prompt)
     if model_choice == "gemini":
         return run_gemini_model(image_path, prompt)
-
+    if model_choice == "ollama":
+        return run_ollama_model(image_path, prompt)
     print("Invalid model choice.")
     return None
 
@@ -144,14 +216,18 @@ def display_result(result: dict) -> None:
     print(f"Response Time     : {result.get('response_time', 'N/A')} seconds")
 
     if result.get("cost_usd") is not None:
-        print(f"Estimated Cost     : ${result['cost_usd']:.6f}")
+        if result["cost_usd"] == 0.0:
+            print(f"Estimated Cost     : $0.00 (Local Model)")
+        else:
+            print(f"Estimated Cost     : ${result['cost_usd']:.6f}")
 
     if result.get("prompt_tokens") is not None:
         print("\nToken Usage Details:")
         print(f"Input (Prompt) Tokens     : {result['prompt_tokens']:,}")
         print(f"Output (Completion) Tokens : {result['completion_tokens']:,}")
         print(f"Total Tokens Used          : {result['total_tokens']:,}")
-        print(f"Remaining Context Tokens   : {result['remaining_tokens']:,}")
+        if result.get("remaining_tokens") is not None:
+            print(f"Remaining Context Tokens   : {result['remaining_tokens']:,}")
         
     print("\nReasoning:",result.get("reasoning", "No reasoning returned."))
 
@@ -170,14 +246,34 @@ if __name__ == "__main__":
     Reasoning: <your reasoning>
     Final Answer: <emotion>
     """
-    # Direct test with a sample image and model choice. Uncomment to run
-    # result = recognize_emotion("gemini", "./images/happy.webp", prompt)
-    # display_result(result)
     
+    # Direct test with a sample image and model choice. Uncomment to run
+    print("running main")
+    result = recognize_emotion("ollama", "./images/happy.webp", prompt) 
+    if result:
+        display_result(result)
+    
+        
     # Terminal User Input
-    print("\nSelect model:\n1. OpenAI GPT-5\n2. Gemini-2.5-Flash\n")
-    choice = input("Enter 1 or 2: ").strip()
-    model_choice = "openai" if choice == "1" else "gemini"
-    image_path = input("Enter the image path (e.g., ./images/photo.jpg): ").strip()
-    result = recognize_emotion(model_choice, image_path, prompt)
-    display_result(result)
+    # print("\nSelect model:\n1. OpenAI GPT-5\n2. Gemini-2.5-Flash\n3. Ollama (Local)\n")
+    # choice = input("Enter 1, 2, or 3: ").strip()
+    
+    # model_choice = ""
+    # if choice == "1":
+    #     model_choice = "openai"
+    # elif choice == "2":
+    #     model_choice = "gemini"
+    # elif choice == "3":
+    #     model_choice = "ollama"
+    # else:
+    #     print("Invalid choice. Exiting.")
+    #     model_choice = None
+
+    # if model_choice:
+    #     image_path = input("Enter the image path (e.g., ./images/photo.jpg): ").strip()
+    #     if os.path.exists(image_path):
+    #         result = recognize_emotion(model_choice, image_path, prompt)
+    #         if result:
+    #             display_result(result)
+    #     else:
+    #         print(f"Error: Image path not found: {image_path}")

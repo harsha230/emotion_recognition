@@ -11,8 +11,6 @@ colorama==0.4.6
 contourpy==1.3.2
 cycler==0.12.1
 distro==1.9.0
-# Editable install with no version control (edad==1.0.0)
--e /Users/harsha/Desktop/cis6930sp25-project3
 fiona==1.10.1
 fonttools==4.57.0
 geopandas==0.12.2
@@ -36,6 +34,7 @@ kiwisolver==1.4.8
 loguru==0.7.3
 matplotlib==3.10.1
 numpy==2.2.5
+ollama==0.6.0
 openai==2.6.1
 packaging==25.0
 pandas==2.2.3
