@@ -81,7 +81,7 @@ ollama pull llava:latest
 Run the script with prompts to select your model and image:
 
 ```bash
-python3 emotion_recognition.py
+python3 main.py
 ```
 
 Follow the interactive prompts:
