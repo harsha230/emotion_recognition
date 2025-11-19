@@ -74,14 +74,14 @@ ollama pull llava:latest
 
 ---
 
-## How to Run
+## How to Run (LLM models)
 
 ### Option 1: Interactive Mode
 
 Run the script with prompts to select your model and image:
 
 ```bash
-python3 main.py
+python3 run_llm.py
 ```
 
 Follow the interactive prompts:
@@ -150,7 +150,15 @@ ollama pull llava:latest  # or whatever model you want to use
 ```
 
 ---
+## How to Run (CV Models)
 
+Run the script with choice of model and image:
+
+```bash
+python3 run_cv.py
+```
+
+---
 
 ## 📄 License
 
