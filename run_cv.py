@@ -11,7 +11,6 @@ def display_cv(result: dict):
     print("\nEmotion Percentages:")
     print(result.get("explanation", "N/A"))
 
-    print("\nDominant Emotion:", result.get("final_answer", "N/A"))
     print("\n")
 
 
