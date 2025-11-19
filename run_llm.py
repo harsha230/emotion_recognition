@@ -18,24 +18,27 @@ def recognize_emotion(image_path: str, prompt: str, model: str):
         return {"error": f"Unknown model: {model}", "model_name": model}
 
 
-def display_result(result: dict):
-    print("\n LLM Model Result: \n")
-
+def display_result(result: dict) -> None:
+    print("\n")
     print(f"Model Used        : {result.get('model_name', 'N/A')}")
     print(f"Response Time     : {result.get('response_time', 'N/A')} seconds")
 
     if result.get("cost_usd") is not None:
-        print(f"Estimated Cost     : ${result['cost_usd']:.6f}")
+        if result["cost_usd"] == 0.0:
+            print(f"Estimated Cost     : $0.00 (Local Model)")
+        else:
+            print(f"Estimated Cost     : ${result['cost_usd']:.6f}")
 
     if result.get("prompt_tokens") is not None:
-        print("\nToken Usage:")
-        print(f"Input Tokens      : {result['prompt_tokens']}")
-        print(f"Output Tokens     : {result['completion_tokens']}")
-        print(f"Total Tokens      : {result['total_tokens']}")
+        print("\nToken Usage Details:")
+        print(f"Input (Prompt) Tokens      : {result['prompt_tokens']:,}")
+        print(f"Output (Completion) Tokens  : {result['completion_tokens']:,}")
+        print(f"Total Tokens Used           : {result['total_tokens']:,}")
+        if result.get("remaining_tokens") is not None:
+            print(f"Remaining Context Tokens    : {result['remaining_tokens']:,}")
 
-    print("\nExplanation:", result.get("explanation"))
-    print("Final Answer:", result.get("final_answer"))
-    print("\n")
+    print("\nExplanation:", result.get("explanation", "No explanation returned."))
+    print("\nFinal Answer:", result.get("final_answer", "No answer returned."))
 
 
 
