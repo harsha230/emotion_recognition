@@ -11,11 +11,11 @@ def recognize_emotion(image_path: str, prompt: str, model: str):
     elif "gemini" in m:
         return run_gemini_model(image_path, prompt, model)
 
-    elif "ollama" in m or "qwen" in m:
+    else:
         return run_ollama_model(image_path, prompt, model)
 
-    else:
-        return {"error": f"Unknown model: {model}", "model_name": model}
+    # else:
+    #     return {"error": f"Unknown model: {model}", "model_name": model}
 
 
 def display_result(result: dict) -> None:
