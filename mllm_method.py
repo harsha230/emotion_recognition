@@ -62,5 +62,5 @@ df.to_csv(f"{output_path}.csv", index=False)
 dataset = Dataset.from_pandas(df)
 print(dataset)
 
-token = "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"
+token = ""
 dataset.push_to_hub(f"Emotion-Aware-AI-Assistant/{safe_model}_{method}", token=token)

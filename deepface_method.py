@@ -24,5 +24,5 @@ df.to_csv(f"deepface_results.csv", index=False)
 dataset = Dataset.from_pandas(df)
 print(dataset)
 
-token = "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"
+token = ""
 dataset.push_to_hub(f"Emotion-Aware-AI-Assistant/deepface_method", token=token)
