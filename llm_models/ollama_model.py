@@ -27,7 +27,7 @@ def run_ollama_model(image_path: str, prompt: str, model_name: str):
     start = time.time()
 
     try:
-        print(f"\nRunning Ollama model '{model_name}'. This may take a moment...")
+        # print(f"\nRunning Ollama model '{model_name}'. This may take a moment...")
 
         response = ollama.chat(
             model=model_name,

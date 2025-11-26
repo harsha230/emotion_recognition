@@ -1,0 +1,66 @@
+from llm_models.openai_model import run_openai_model
+from llm_models.gemini_model import run_gemini_model
+from llm_models.ollama_model import run_ollama_model
+import argparse
+from utils.prompts import prompt1, prompt2
+from datasets import Dataset
+import pandas as pd
+from tqdm import tqdm
+import os
+
+# Prompt1 - Discrete Emotion Classification
+# Prompt2 - Continuous Emotion Scoring
+print("Starting emotion recognition script...")
+parser = argparse.ArgumentParser()
+parser.add_argument("--model", type=str, required=True)
+parser.add_argument("--method", type=str, required=True)
+args = parser.parse_args()
+
+def sanitize_filename(name: str) -> str:
+    """
+    Replace characters not allowed in file names (like ':' on Windows).
+    Example: 'qwen3-vl:2b-instruct' → 'qwen3-vl_2b-instruct'
+    """
+    return name.replace(":", "_").replace("/", "_").replace("\\", "_")
+
+model = args.model
+method = args.method
+
+if method == "discrete":
+    prompt = prompt1
+elif method == "continuous":
+    prompt = prompt2
+else:
+    raise ValueError(f"Unknown method: {method}. Expected 'discrete' or 'continuous'.")
+
+os.makedirs("results", exist_ok=True)
+safe_model = sanitize_filename(model)
+output_path = f"results/{safe_model}_{method}"
+
+print(f"Loading dataset...")
+df = pd.read_csv(f"dataset_path_labels.csv")
+
+
+df = df.sample(5).reset_index(drop=True)
+
+print(f"Running {model} on dataset with {method}...")
+for index, row in tqdm(df.iterrows(), total=len(df)):
+    print(f"Image_path: {row['image_path']}")
+    print(f"\nExpected Emotion: {row['emotion']}")
+    print(f"\nModel: {model} | Method: {method}")
+    print(f"\nPrompt: {prompt}\n")
+    result = run_ollama_model(image_path=row["image_path"], prompt=prompt, model=model)
+    df.loc[index, "label"] = row["emotion"]
+    df.loc[index, "image_path"] = row["image_path"]
+    df.loc[index, "model_name"] = result.get("model_name", "N/A")
+    df.loc[index, "response_time"] = result.get("response_time", "N/A")
+    df.loc[index, "prediction_continuos"] = result.get("explanation", "N/A")
+    df.loc[index, "predicted_emotion"] = result.get("final_answer", "N/A")
+
+df.to_csv(f"{output_path}.csv", index=False)
+
+dataset = Dataset.from_pandas(df)
+print(dataset)
+
+token = "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"
+dataset.push_to_hub(f"Emotion-Aware-AI-Assistant/{safe_model}_{method}", token=token)

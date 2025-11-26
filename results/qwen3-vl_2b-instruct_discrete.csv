@@ -1,0 +1,11 @@
+emotion,image_path
+disgust,all_test\disgust\train_train_04351_aligned.jpg
+sadness,all_test\sadness\train_train_00567_aligned.jpg
+happiness,all_test\happiness\train_train_06120_aligned.jpg
+neutral,all_test\neutral\train_train_11059_aligned.jpg
+anger,all_test\anger\train_train_07250_aligned.jpg
+happiness,all_test\happiness\test_test_1752_aligned.jpg
+happiness,all_test\happiness\train_train_06864_aligned.jpg
+neutral,all_test\neutral\train_train_12055_aligned.jpg
+happiness,all_test\happiness\test_test_0255_aligned.jpg
+anger,all_test\anger\test_test_1289_aligned.jpg

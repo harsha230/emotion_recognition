@@ -2,6 +2,7 @@ from cv_models.deepface_model import run_deepface_model
 import pandas as pd
 from tqdm import tqdm
 import time
+from datasets import Dataset
 
 print("Loading dataset...")
 df = pd.read_csv(f"dataset_path_labels.csv")
@@ -19,3 +20,9 @@ for index, row in tqdm(df.iterrows(), total=len(df)):
     df.loc[index, "predicted_emotion"] = result.get("final_answer", "N/A")
 
 df.to_csv(f"deepface_results.csv", index=False)
+
+dataset = Dataset.from_pandas(df)
+print(dataset)
+
+token = "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"
+dataset.push_to_hub(f"Emotion-Aware-AI-Assistant/deepface_method", token=token)
