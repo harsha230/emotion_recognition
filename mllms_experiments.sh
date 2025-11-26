@@ -6,6 +6,8 @@ set -e
 MODELS=(
   "qwen3-vl:2b-instruct"
   "qwen3-vl:2b-thinking"
+  "qwen3-vl:4b-instruct"
+  "qwen3-vl:4b-thinking"
 )
 
 # Methods / prompts to be tested

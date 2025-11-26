@@ -42,21 +42,21 @@ print(f"Loading dataset...")
 df = pd.read_csv(f"dataset_path_labels.csv")
 
 
-df = df.sample(1).reset_index(drop=True)
 
 print(f"Running {model} on dataset with {method}...")
 for index, row in tqdm(df.iterrows(), total=len(df)):
-    print(f"Image_path: {row['image_path']}")
-    print(f"\nExpected Emotion: {row['emotion']}")
-    print(f"\nModel: {model} | Method: {method}")
-    print(f"\nPrompt: {prompt}\n")
-    # result = run_ollama_model(image_path=row["image_path"], prompt=prompt, model=model)
-    # df.loc[index, "label"] = row["emotion"]
-    # df.loc[index, "image_path"] = row["image_path"]
-    # df.loc[index, "model_name"] = result.get("model_name", "N/A")
-    # df.loc[index, "response_time"] = result.get("response_time", "N/A")
-    # df.loc[index, "prediction_continuos"] = result.get("explanation", "N/A")
-    # df.loc[index, "predicted_emotion"] = result.get("final_answer", "N/A")
+    # print(f"Image_path: {row['image_path']}")
+    # print(f"\nExpected Emotion: {row['emotion']}")
+    # print(f"\nModel: {model} | Method: {method}")
+    # print(f"\nPrompt: {prompt}\n")
+    path = row['image_path'].replace('\\', '/')
+    result = run_ollama_model(image_path=path, prompt=prompt, model_name=model)
+    df.loc[index, "label"] = row["emotion"]
+    df.loc[index, "image_path"] = row["image_path"]
+    df.loc[index, "model_name"] = result.get("model_name", "N/A")
+    df.loc[index, "response_time"] = result.get("response_time", "N/A")
+    df.loc[index, "explanation"] = result.get("explanation", "N/A")
+    df.loc[index, "predicted_emotion"] = result.get("final_answer", "N/A")
 
 df.to_csv(f"{output_path}.csv", index=False)
 
