@@ -36,12 +36,13 @@ else:
 os.makedirs("results", exist_ok=True)
 safe_model = sanitize_filename(model)
 output_path = f"results/{safe_model}_{method}"
+# result = recognize_emotion(image_path, prompt, model)
 
 print(f"Loading dataset...")
 df = pd.read_csv(f"dataset_path_labels.csv")
 
 
-df = df.sample(5).reset_index(drop=True)
+df = df.sample(10).reset_index(drop=True)
 
 print(f"Running {model} on dataset with {method}...")
 for index, row in tqdm(df.iterrows(), total=len(df)):
