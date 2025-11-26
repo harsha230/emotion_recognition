@@ -15,6 +15,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, required=True)
 parser.add_argument("--method", type=str, required=True)
 args = parser.parse_args()
+token = "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"
+
 
 def sanitize_filename(name: str) -> str:
     """
@@ -58,10 +60,18 @@ for index, row in tqdm(df.iterrows(), total=len(df)):
     df.loc[index, "explanation"] = result.get("explanation", "N/A")
     df.loc[index, "predicted_emotion"] = result.get("final_answer", "N/A")
 
+    if (index + 1) % 100 == 0:
+        df.to_csv(f"{output_path}_backup.csv", index=False)
+        print(f"Checkpoint saved with {index + 1} samples at {output_path}.csv")
+
+    if (index + 1) % 500 == 0:
+        dataset = Dataset.from_pandas(df)
+        dataset.push_to_hub(f"Emotion-Aware-AI-Assistant/{safe_model}_{method}", token=token)
+
+
 df.to_csv(f"{output_path}.csv", index=False)
 
 dataset = Dataset.from_pandas(df)
 print(dataset)
 
-token = ""
 dataset.push_to_hub(f"Emotion-Aware-AI-Assistant/{safe_model}_{method}", token=token)
