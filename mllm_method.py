@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, required=True)
 parser.add_argument("--method", type=str, required=True)
 args = parser.parse_args()
-token = "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"
+token = ""
 
 
 def sanitize_filename(name: str) -> str:
