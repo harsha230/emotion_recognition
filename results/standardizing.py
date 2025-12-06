@@ -6,6 +6,8 @@ import re
 from datasets import Dataset
 import argparse
 
+print("Starting standardization script...")
+
 load_dotenv()
 hf_token = os.getenv("HF_TOKEN")
 
@@ -14,6 +16,7 @@ parser.add_argument("--name", type=str, required=True)
 args = parser.parse_args()
 name = args.name
 
+print(f"Standardizing dataset for {name}...")
 ds = load_dataset(f"Emotion-Aware-AI-Assistant/{name}", token=hf_token)
 df = pd.DataFrame(ds['train'])
 
