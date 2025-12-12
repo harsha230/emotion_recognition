@@ -10,6 +10,7 @@ import os
 
 # Prompt1 - Discrete Emotion Classification
 # Prompt2 - Continuous Emotion Scoring
+# Prompt3 - Hierarchical (Step 1: Valence, Step 2: Specific)
 print("Starting emotion recognition script...")
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, required=True)
@@ -32,6 +33,8 @@ if method == "discrete":
     prompt = prompt1
 elif method == "continuous":
     prompt = prompt2
+elif method == "hierarchical":
+    primary_prompt = prompt3_step1
 else:
     raise ValueError(f"Unknown method: {method}. Expected 'discrete' or 'continuous'.")
 
@@ -47,11 +50,40 @@ df = pd.read_csv(f"dataset_path_labels.csv")
 
 print(f"Running {model} on dataset with {method}...")
 for index, row in tqdm(df.iterrows(), total=len(df)):
+    
     # print(f"Image_path: {row['image_path']}")
     # print(f"\nExpected Emotion: {row['emotion']}")
     # print(f"\nModel: {model} | Method: {method}")
     # print(f"\nPrompt: {prompt}\n")
     path = row['image_path'].replace('\\', '/')
+    if method == "hierarchical":
+        step1_result = run_ollama_model(image_path=path, prompt=prompt3_step1, model_name=model)
+        valence = step1_result.get("final_answer", "").strip().lower()
+        
+        combined_explanation = f"[Step 1: {valence}] {step1_result.get('explanation', '')}"
+        result = step1_result 
+        final_answer = valence 
+
+        if "negative" in valence:
+            step2_result = run_ollama_model(image_path=path, prompt=prompt3_step2_neg, model_name=model)
+            final_answer = step2_result.get("final_answer", "N/A")
+            combined_explanation += f" | [Step 2: Negative] {step2_result.get('explanation', '')}"
+            result = step2_result 
+            
+        elif "positive" in valence:
+            step2_result = run_ollama_model(image_path=path, prompt=prompt3_step2_pos, model_name=model)
+            final_answer = step2_result.get("final_answer", "N/A")
+            combined_explanation += f" | [Step 2: Positive] {step2_result.get('explanation', '')}"
+            result = step2_result 
+            
+        elif "neutral" in valence:
+            final_answer = "neutral"
+
+        result["final_answer"] = final_answer
+        result["explanation"] = combined_explanation
+
+    else:
+        result = run_ollama_model(image_path=path, prompt=prompt, model_name=model)
     result = run_ollama_model(image_path=path, prompt=prompt, model_name=model)
     df.loc[index, "label"] = row["emotion"]
     df.loc[index, "image_path"] = row["image_path"]
