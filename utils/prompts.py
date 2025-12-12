@@ -34,8 +34,8 @@ prompt3_step1 = '''You are an expert in Facial Emotion Recognition. Analyze the 
 Your task is to determine the valence/category of the emotion expressed.
 
 Classify the emotion into exactly one of these three categories:
-1. Positive (includes happiness and surprise)
-2. Negative (includes anger, fear, disgust, and sadness)
+1. Positive 
+2. Negative 
 3. Neutral
 
 Follow the format strictly:

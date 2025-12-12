@@ -8,23 +8,23 @@ hf_token = os.getenv("HF_TOKEN")
 
 names = [
     "deepface_method",
-  "llava_13b_discrete",
-  "minicpm-v_8b_discrete",
-  "llava_7b_discrete",
-  "llava-phi3_3.8b_discrete",
-  "qwen3-vl_30b-a3b-instruct_discrete",
-  "qwen3-vl_8b-instruct_discrete",
-  "qwen3-vl_2b-thinking_discrete",
-  "qwen3-vl_4b-instruct_discrete",
-  "qwen3-vl_2b-instruct_discrete",
-  "qwen3-vl_32b-instruct_discrete",
-  "llava-llama3_8b_discrete",
-  "qwen3-vl_8b-instruct_continuous",
-  "llava-phi3_3.8b_continuous",
-  "llava_7b_continuous",
-  "minicpm-v_8b_continuous",
-  "qwen3-vl_2b-instruct_continuous",
-  "qwen3-vl_4b-instruct_continuous"
+    "llava_13b_discrete",
+    "minicpm-v_8b_discrete",
+    "llava_7b_discrete",
+    "llava-phi3_3.8b_discrete",
+    "qwen3-vl_30b-a3b-instruct_discrete",
+    "qwen3-vl_8b-instruct_discrete",
+    "qwen3-vl_2b-thinking_discrete",
+    "qwen3-vl_4b-instruct_discrete",
+    "qwen3-vl_2b-instruct_discrete",
+    "qwen3-vl_32b-instruct_discrete",
+    "llava-llama3_8b_discrete",
+    "qwen3-vl_8b-instruct_continuous",
+    "llava-phi3_3.8b_continuous",
+    "llava_7b_continuous",
+    "minicpm-v_8b_continuous",
+    "qwen3-vl_2b-instruct_continuous",
+    "qwen3-vl_4b-instruct_continuous"
 ]
 
 datasets_list = []
