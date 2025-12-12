@@ -1,3 +1,10 @@
+from dotenv import load_dotenv
+import os
+import pandas as pd
+from datasets import load_dataset
+import re
+from datasets import Dataset
+import argparse
 from datasets import Dataset
 from dotenv import load_dotenv
 import os
@@ -9,18 +16,119 @@ from sklearn.metrics import (
     confusion_matrix
 )
 import json
-print("Starting metrics extraction script...")
+
 load_dotenv()
 hf_token = os.getenv("HF_TOKEN")
+
+print("AAAAAAAAAAAAAAAA")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", type=str, required=True)
 args = parser.parse_args()
 name = args.name
 
-print(f"Extracting metrics for {name}...")
-ds = load_dataset(f"Emotion-Aware-AI-Assistant/{name}_standardized", token=hf_token)
+ds = load_dataset(f"Emotion-Aware-AI-Assistant/{name}", token=hf_token)
 df = pd.DataFrame(ds['train'])
+df['predicted_emotion'].iloc[0]
+import re
+
+def extract_discrete_emotion(text):
+    if not isinstance(text, str) or text.strip() == "":
+        return "invalid"
+    
+    pairs = re.findall(r'([a-zA-Z_]+):\s*(\d+)', text)
+    
+    if not pairs:
+        return text
+    
+    try:
+        emotion_dict = {emotion.lower(): int(score) for emotion, score in pairs}
+    except:
+        return text
+    
+    max_value = max(emotion_dict.values())
+    
+    max_emotions = [emo for emo, score in emotion_dict.items() if score == max_value]
+    
+    if len(max_emotions) > 1:
+        return f"tie{len(max_emotions)}"
+    
+    return max_emotions[0]
+
+
+df["discrete_emotion"] = df["predicted_emotion"].apply(extract_discrete_emotion)
+
+df["discrete_emotion"].value_counts()
+df.columns
+df.rename(columns={"predicted_emotion": "predicted_emotion_continuous", "discrete_emotion": "predicted_emotion"}, inplace=True)
+df["predicted_emotion"].value_counts()
+bigger = df[df['predicted_emotion'].str.len() > 9]
+refused = bigger[bigger['predicted_emotion'].str.contains('sorry', case=False) | bigger['predicted_emotion'].str.contains('cannot', case=False)]
+wrong = bigger[~bigger.index.isin(refused.index)]
+
+df['predicted_emotion'] = ['emotion_refused' if idx in refused.index else pred for idx, pred in zip(df.index, df['predicted_emotion'])]
+df['predicted_emotion'] = ['wrong_format' if idx in wrong.index else pred for idx, pred in zip(df.index, df['predicted_emotion'])]
+
+df["predicted_emotion"].value_counts()
+TARGET_EMOTIONS = [ 'anger', 'disgust', 'fear', 'happiness', 'neutral', 'sadness', 'surprise' ]
+
+
+import re
+
+def is_tie(label: str) -> bool:
+    if not isinstance(label, str):
+        return False
+    # matches: "tie", "tie2", "tie3", "tie10", etc.
+    return bool(re.fullmatch(r"tie\d*", label.lower().strip()))
+
+
+valid_labels = TARGET_EMOTIONS + ['wrong_format', 'emotion_refused']
+def map_emotion_final(label: str):
+    if not isinstance(label, str):
+        return 'emotion_not_listed'
+
+    label_clean = label.lower().strip()
+
+    # 1. Emoções normais
+    if label_clean in TARGET_EMOTIONS:
+        return label_clean
+
+    # 2. Categorias válidas adicionais
+    if label_clean in ['wrong_format', 'emotion_refused']:
+        return label_clean
+
+    # 3. Empates (aceita tie, tie2, tie3, tie7...)
+    if is_tie(label_clean):
+        return label_clean
+
+    # 4. Caso nada disso encaixe → inválido
+    return 'emotion_not_listed'
+
+
+
+df["predicted_emotion"] = df["predicted_emotion"].apply(map_emotion_final)
+
+df["predicted_emotion"].value_counts()
+df["correct"] = (df["label"] == df["predicted_emotion"]).astype(int)
+
+method_name = name.split("_")[-1]           # "discrete"
+model_name = "_".join(name.split("_")[:-1])   # "minicpm-v_8b"
+
+df = df[['model_name', 'image_path', 'label', 'predicted_emotion', 'correct', 'response_time']]
+df['method'] = method_name
+
+# Contar todos os empates (tie, tie2, tie3...)
+tie_counts = (
+    df["predicted_emotion"]
+    .str.extract(r"(tie\d*)")[0]      # captura tie, tie2, tie3 etc
+    .dropna()
+    .value_counts()
+    .to_dict()
+)
+
+# Converter para JSON
+tie_json = json.dumps(tie_counts)
+print("Tie counts JSON:", tie_json)
 
 
 EMOTIONS = ['anger', 'disgust', 'fear', 'happiness', 'neutral', 'sadness', 'surprise']
@@ -135,3 +243,4 @@ df_results = pd.concat([df_results, df_info], axis=1)
 
 dataset = Dataset.from_pandas(df_results)
 dataset.push_to_hub(f"Emotion-Aware-AI-Assistant/{name}_results", token=hf_token)
+print(df_results)
