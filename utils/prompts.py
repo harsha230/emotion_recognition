@@ -28,3 +28,38 @@ happiness: <1–5>
 neutral: <1–5>
 sadness: <1–5>
 surprise: <1–5>'''
+
+
+prompt3_step1 = '''You are an expert in Facial Emotion Recognition. Analyze the facial expression in the image.
+Your task is to determine the valence/category of the emotion expressed.
+
+Classify the emotion into exactly one of these three categories:
+1. Positive (includes happiness and surprise)
+2. Negative (includes anger, fear, disgust, and sadness)
+3. Neutral
+
+Follow the format strictly:
+Explanation: <explanation>
+Final Answer: <Positive/Negative/Neutral>'''
+
+# Step 2a: If Step 1 was Negative
+prompt3_step2_neg = '''You are an expert in Facial Emotion Recognition. You have identified that this face expresses a NEGATIVE emotion.
+Now, classify the specific negative emotion from the following list:
+- anger
+- disgust
+- fear
+- sadness
+
+Follow the format strictly:
+Explanation: <explanation>
+Final Answer: <one_emotion_label>'''
+
+# Step 2b: If Step 1 was Positive
+prompt3_step2_pos = '''You are an expert in Facial Emotion Recognition. You have identified that this face expresses a POSITIVE emotion.
+Now, classify the specific emotion from the following list:
+- happiness
+- surprise
+
+Follow the format strictly:
+Explanation: <explanation>
+Final Answer: <one_emotion_label>'''
