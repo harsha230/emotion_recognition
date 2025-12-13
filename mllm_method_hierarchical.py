@@ -7,20 +7,19 @@ from datasets import Dataset
 import pandas as pd
 from tqdm import tqdm
 import os
-from dotenv import load_dotenv
 
 
-load_dotenv()
-token = os.getenv("HF_TOKEN")
+token = ""
+# ATTENTION: DO NOT SHARE THIS TOKEN!!!!
 
 # Prompt1 - Discrete Emotion Classification
 # Prompt2 - Continuous Emotion Scoring
 # Prompt3 - Hierarchical (Step 1: Valence, Step 2: Specific)
 print("Starting emotion recognition script...")
-parser = argparse.ArgumentParser()
-parser.add_argument("--model", type=str, required=True)
-parser.add_argument("--method", type=str, required=True)
-args = parser.parse_args()
+
+method = "hierarchical"
+model = "qwen3-vl:2b-instruct" # Harhsa
+# model = "qwen3-vl:4b-instruct" # Eva
 
 
 def sanitize_filename(name: str) -> str:
@@ -29,9 +28,6 @@ def sanitize_filename(name: str) -> str:
     Example: 'qwen3-vl:2b-instruct' → 'qwen3-vl_2b-instruct'
     """
     return name.replace(":", "_").replace("/", "_").replace("\\", "_")
-
-model = args.model
-method = args.method
 
 if method == "discrete":
     prompt = prompt1
