@@ -4,12 +4,11 @@ set -e
 
 # Models to be tested
 MODELS=(
-  "minicpm-v:8b"
+  "llava-llama3:8b"
   "llava:7b"
   "qwen3-vl:8b-instruct"
-  "llava-phi3:3.8b"
-  "llava:13b"
-  "llava-llama3:8b"
+  "minicpm-v:8b"
+  "llava:13b" 
 )
 
 # Methods / prompts to be tested
