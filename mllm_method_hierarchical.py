@@ -18,9 +18,7 @@ token = ""
 print("Starting emotion recognition script...")
 
 method = "hierarchical"
-model = "qwen3-vl:2b-instruct" # Harhsa
-# model = "qwen3-vl:4b-instruct" # Eva
-
+model = "qwen3-vl:2b-instruct" 
 
 def sanitize_filename(name: str) -> str:
     """
