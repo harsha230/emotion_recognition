@@ -4,9 +4,6 @@ set -e
 
 # Models to be tested
 MODELS=(
-  "llava-llama3:8b"
-  "llava:7b"
-  "minicpm-v:8b"
   "llava:13b" 
   "qwen3-vl:30b-a3b-instruct"
 )
