@@ -6,7 +6,6 @@ set -e
 MODELS=(
   "llava-llama3:8b"
   "llava:7b"
-  "qwen3-vl:8b-instruct"
   "minicpm-v:8b"
   "llava:13b" 
 )
