@@ -192,6 +192,7 @@ data = {
     "weighted_recall": [weighted_recall],
     "confusion_matrix_json": [confusion_json],
     "invalid_counts_json": [invalid_json],
+    "tie_counts_json": [tie_json]
 }
 
 for emotion, value in zip(EMOTIONS, f1_per_class):
@@ -215,7 +216,7 @@ df_results = df_results[['model_name', 'method', 'accuracy', 'macro_f1', 'macro_
        'precision_happiness', 'precision_neutral', 'precision_sadness',
        'precision_surprise', 'recall_anger', 'recall_disgust', 'recall_fear',
        'recall_happiness', 'recall_neutral', 'recall_sadness',
-       'recall_surprise']]
+       'recall_surprise', 'tie_counts_json']]
 
 wrong_format = len(df[df['predicted_emotion'] == 'wrong_format'])
 emotion_refused = len(df[df['predicted_emotion'] == 'emotion_refused'])

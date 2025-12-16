@@ -4,14 +4,16 @@ set -e
 
 # Models to be tested
 MODELS=(
-  "llava-llama3:8b"
-  "llava:7b"
-  "minicpm-v:8b"
-  "llava:13b"
+  "gemma3:12b-it-q4_K_M"
+  "ministral-3:14b-instruct-2512-q4_K_M"
+  "gemma3:27b-it-q4_K_M"
 )
+
 
 # Methods / prompts to be tested
 METHODS=(
+  "discrete"
+  "continuous"
   "hierarchical"
 )
 

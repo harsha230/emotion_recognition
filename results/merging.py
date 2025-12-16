@@ -24,7 +24,15 @@ names = [
     "llava_7b_continuous",
     "minicpm-v_8b_continuous",
     "qwen3-vl_2b-instruct_continuous",
-    "qwen3-vl_4b-instruct_continuous"
+    "qwen3-vl_4b-instruct_continuous",
+    "llava_13b_hierarchical",
+    "llava_13b_hierarchical",
+    "qwen3-vl_8b-instruct_hierarchical",
+    "qwen3-vl_2b-instruct_hierarchical",
+    "llava-llama3_8b_hierarchical",
+    "llava-phi3_3.8b_hierarchical",
+    "llava_7b_hierarchical",
+    "qwen3-vl_4b-instruct_hierarchical"
 ]
 
 datasets_list = []
@@ -39,8 +47,8 @@ for n in names:
     # -------------------------
     # ADD tie_counts COLUMN IF MISSING
     # -------------------------
-    if "tie_counts" not in ds.column_names:
-        ds = ds.add_column("tie_counts", [""] * ds.num_rows)
+    if "tie_counts_json" not in ds.column_names:
+        ds = ds.add_column("tie_counts_json", [""] * ds.num_rows)
 
     datasets_list.append(ds)
     print(n, ds.num_rows)

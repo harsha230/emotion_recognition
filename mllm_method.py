@@ -50,7 +50,6 @@ output_path = f"results/{safe_model}_{method}"
 print(f"Loading dataset...")
 df = pd.read_csv(f"dataset_path_labels.csv")
 
-
 print(f"Running {model} on dataset with {method}...")
 for index, row in tqdm(df.iterrows(), total=len(df)):
     path = row['image_path'].replace('\\', '/')
