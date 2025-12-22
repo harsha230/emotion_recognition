@@ -62,6 +62,7 @@ for n in names:
     print(n, ds.num_rows)
 
 dataset_all = concatenate_datasets(datasets_list)
+dataset_all = dataset_all.rename_column("method", "output_method")
 
 dataset_all.push_to_hub(
     "Emotion-Aware-AI-Assistant/all_models_results",
